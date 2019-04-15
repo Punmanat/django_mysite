@@ -1,0 +1,44 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Detail</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+</head>
+<body>
+<div class="container">
+    <h1>Poll {{ poll.title }} ({{ poll.question_len }} คำถาม)</h1>
+    <form action="{% url 'detail' poll.id %}" method="post">
+    {% csrf_token %}
+        <ol>
+            {% for question in poll.question_set.all %}
+                <li class="mt-3">
+                    <h4 class="card-title">
+                        {{ question.text }}
+                    </h4>
+                    {% for choice in question.choice_set.all %}
+                        <input type="radio" class="mb-3" name="choice{{ question.id }}" value="{{ choice.id }}"
+                               {% if choice.answer %}checked="checked"{% endif %}>{{ choice.text }} - {{ choice.answer }}<br>
+                    {% endfor %}
+                </li>
+
+            {% endfor %}
+        </ol>
+    <div class="float-right">
+        <a href="{% url 'index' %}" class="btn btn-danger">กลับหน้าแรก</a>
+        <input type="submit" class="btn btn-success ml-3" value="บันทึก"/>
+    </div>
+    </form>
+    <br>
+    <br>
+</div>
+
+</ol>
+
+
+</body>
+</html>
