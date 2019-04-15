@@ -1,5 +1,7 @@
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # poll_list = [
 #     {
@@ -166,7 +168,8 @@ def index(req):
     }
     return render(req, "polls/index.html", context=context)
 
-
+@login_required
+@permission_required('polls.view_poll')
 def details(req, poll_id):
     poll = Poll.objects.get(pk=poll_id)
 
@@ -193,7 +196,8 @@ def details(req, poll_id):
                 )
     return render(req, 'polls/detail.html', context={'poll':poll})
 
-
+@login_required
+@permission_required('polls.add_poll')
 def create(req):
     if(req.method == 'POST'):
         form = PollForm(req.POST)
@@ -219,3 +223,37 @@ def create(req):
     }
 
     return render(req, 'polls/create.html' ,context=context)
+
+
+def my_login(req):
+    context = {}
+    if req.method == 'POST':
+        username = req.POST.get('username')
+        password = req.POST.get('password')
+
+        user = authenticate(req,username=username, password=password)
+
+        if user:
+            login(req, user)
+            next_url = req.POST.get('next_url') #hidden field input name
+            if next_url:
+                return  redirect(next_url)
+            else:
+                return  redirect('index')
+        else:
+            error = 'Wrong username or password'
+            context['username'] = username
+            context['password'] = password
+            context['error'] = 'Wrong username or password'
+
+    next_url = req.GET.get('next')
+    if next_url:
+        context['next_url'] = next_url
+
+
+    return render(req, 'polls/login.html', context=context)
+
+@login_required
+def my_logout(req):
+    logout(req)
+    return redirect('login')

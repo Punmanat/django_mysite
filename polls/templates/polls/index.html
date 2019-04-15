@@ -19,8 +19,9 @@
                 <div class="card-body">
                     <ul>
                         {% for poll in poll_list %}
-                            <li>{{ poll.id }} {{ poll.title }} ({{ poll.question_len }} คำถาม) - <a
-                                    href="{% url 'detail' poll_id=poll.id %}">detail</a></li>
+
+                            <li>{{ poll.id }} {{ poll.title }} ({{ poll.question_len }} คำถาม) -
+                                {% if user.is_authenticated %}<a href="{% url 'detail' poll_id=poll.id %}">detail</a> {% endif %}</li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -32,6 +33,11 @@
             </div>
         </div>
     </div>
+    {% if user.is_authenticated %}<p><a href="{% url 'logout' %}" class="btn btn-danger">Logout</a></p> {% endif %}
+    {#check permission #}
+    {% if perms.polls.add_poll %}
+    <p><a href="{% url 'create' %}" class="btn btn-danger">Create new poll</a></p>
+    {% endif %}
 </div>
 </body>
 </html>
