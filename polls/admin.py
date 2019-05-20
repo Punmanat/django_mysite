@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from django.contrib.auth.models import Permission
 
-from .models import Poll, Question, Choice, Answer
+from .models import Poll, Question, Choice, Answer, Comment
 
 admin.site.register(Permission)
 class QuestionInline(admin.StackedInline):
@@ -52,3 +52,10 @@ class ChoiceAdmin(admin.ModelAdmin):
     list_per_page = 15
 
 admin.site.register(Choice, ChoiceAdmin)
+
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'email', 'tel', 'poll']
+    list_filter = ['poll']
+    search_fields = ['title']
+admin.site.register(Comment, CommentAdmin)

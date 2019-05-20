@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>add choice</title>
+</head>
+<body>
+<div id='app'>
+    <h2>Add choice for {{ question }}'</h2>
+    <h3 v-if="success">Create successfully</h3>
+    <table>
+        <tr>
+            <th>Choice Text</th>
+            <th>Choice Value</th>
+            <th>Delete</th>
+        </tr>
+        <tr v-for="choice in choices">
+            <td><input type="text" v-model="choice.text"></td>
+            <td><input type="number" v-model="choice.value"></td>
+            <td><input type="button" @click="deleteChoice(choice)" value="DEL"></td>
+            <td></td>
+        </tr>
+    </table>
+    <p><input type="button" @click="addChoice" value="add new choice"></p>
+    <p><input type="button" @click="submit" value="save data"></p>
+    <p v-for="error in errorMsg">
+        [[error]]
+    </p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    var csrftoken = Cookies.get('csrftoken')
+    let app = new Vue({
+        el: "#app",
+        delimiters: ["[[", "]]"],
+        data: {
+            success: false,
+            errorMsg: '',
+            choices: []
+        },
+        methods: {
+            addChoice() {
+                this.choices.push(
+                    {
+                        text: '',
+                        value: 0
+
+                    }
+                )
+            },
+            deleteChoice(choice) {
+                let index = this.choices.indexOf(choice)
+                this.choices.splice(index, 1)
+            },
+            submit() {
+                console.log(csrftoken)
+                axios.post('http://localhost:8000/polls/api/' + {{ question.id }} +'/add_choice/', this.choices,
+                    {headers: {'X-CSRFTOKEN': csrftoken}}
+                )
+                    .then(res => {
+                        console.log(res)
+                        this.success = true
+                        this.errorMsg = ""
+                    })
+                    .catch(err => {
+                        console.log(err.message)
+                        this.errorMsg = err.response.data.message
+                    })
+            }
+        }
+    })
+</script>
+</body>
+</html>

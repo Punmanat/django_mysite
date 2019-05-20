@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 # Create your models here.
@@ -39,3 +40,30 @@ class Choice(models.Model):
 class Answer(models.Model):
     choice = models.OneToOneField(Choice, on_delete=models.PROTECT)
     question = models.ForeignKey(Question, on_delete=models.PROTECT)
+
+class Comment(models.Model):
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, null=True, blank=True)
+    title = models.CharField(max_length=100)
+    body = models.TextField()
+    email = models.EmailField()
+    tel = models.CharField(max_length=10)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    line_id = models.CharField(max_length=100)
+    facebook = models.CharField(max_length=100)
+
+    MALE = "M"
+    FEMALE = "F"
+    OTHER = "X"
+    GENDERS = (
+        (MALE, 'ชาย'),
+        (FEMALE, 'หญิง'),
+        (OTHER, 'อื่น'),
+    )
+
+    gender = models.CharField(max_length=1, choices=GENDERS)
+
+    birthday = models.DateField(null=True)
